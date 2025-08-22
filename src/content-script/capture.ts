@@ -1,4 +1,4 @@
-import { Region } from '../shared/types';
+import { Region, OCRResult } from '../shared/types';
 import { MESSAGE_TYPES } from '../shared/constants';
 
 export class ScreenCapture {
@@ -137,6 +137,32 @@ export class ScreenCapture {
       console.error('Failed to optimize image:', error);
       // Return original image if optimization fails
       return imageDataUrl;
+    }
+  }
+
+  /**
+   * Extract text using Tesseract.js (local processing)
+   * This method can be used in content script where DOM is available
+   */
+  public async extractTextWithTesseract(imageDataUrl: string): Promise<OCRResult> {
+    try {
+      // Dynamic import to avoid bundling Tesseract in production if not needed
+      const { createWorker } = await import('tesseract.js');
+      
+      const worker = await createWorker('eng');
+      
+      const { data } = await worker.recognize(imageDataUrl);
+      
+      await worker.terminate();
+
+      return {
+        text: data.text.trim(),
+        confidence: Math.round(data.confidence),
+        success: true
+      };
+    } catch (error) {
+      console.error('Tesseract OCR failed:', error);
+      throw new Error('Local OCR processing failed');
     }
   }
 }
