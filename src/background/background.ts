@@ -19,22 +19,34 @@ class BackgroundService {
       const settings = await StorageManager.getSettings();
       const apiKeys = await StorageManager.getAllApiKeys();
 
+      console.log('Initializing services with settings:', settings);
+      console.log('API keys available:', Object.keys(apiKeys).filter(key => apiKeys[key as keyof typeof apiKeys]));
+
       // Configure OCR service
       this.ocrService.setService(settings.ocrService);
       if (settings.ocrService === 'ocrspace' && apiKeys.ocrApiKey) {
         this.ocrService.setApiKey(apiKeys.ocrApiKey);
+        console.log('OCR.Space API key configured');
       } else if (settings.ocrService === 'googlevision' && apiKeys.googleVisionApiKey) {
         this.ocrService.setApiKey(apiKeys.googleVisionApiKey);
+        console.log('Google Vision API key configured');
+      } else {
+        console.log('No API key configured for OCR service:', settings.ocrService);
       }
 
       // Configure LLM service
       this.llmService.setService(settings.llmService);
       if (settings.llmService === 'openai' && apiKeys.openaiApiKey) {
         this.llmService.setOpenAIKey(apiKeys.openaiApiKey);
+        console.log('OpenAI API key configured');
       } else if (settings.llmService === 'anthropic' && apiKeys.anthropicApiKey) {
         this.llmService.setAnthropicKey(apiKeys.anthropicApiKey);
+        console.log('Anthropic API key configured');
       } else if (settings.llmService === 'gemini' && apiKeys.geminiApiKey) {
         this.llmService.setGeminiKey(apiKeys.geminiApiKey);
+        console.log('Gemini API key configured');
+      } else {
+        console.log('No API key configured for LLM service:', settings.llmService);
       }
 
       console.log('Background service initialized');
@@ -183,11 +195,13 @@ class BackgroundService {
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
+      console.log('Saving settings:', settings);
       await StorageManager.saveSettings(settings);
       
       // Reinitialize services with new settings
       await this.initializeServices();
       
+      console.log('Settings saved and services reinitialized');
       sendResponse({ success: true });
     } catch (error) {
       console.error('Save settings failed:', error);

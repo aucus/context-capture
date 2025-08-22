@@ -10,9 +10,11 @@ export class StorageManager {
       const currentSettings = await this.getSettings();
       const updatedSettings = { ...currentSettings, ...settings };
       
+      console.log('StorageManager: Saving settings:', updatedSettings);
       await chrome.storage.sync.set({
         [STORAGE_KEYS.SETTINGS]: updatedSettings
       });
+      console.log('StorageManager: Settings saved successfully');
     } catch (error) {
       console.error('Failed to save settings:', error);
       throw new Error('Failed to save settings');
@@ -27,10 +29,13 @@ export class StorageManager {
       const result = await chrome.storage.sync.get([STORAGE_KEYS.SETTINGS]);
       const savedSettings = result[STORAGE_KEYS.SETTINGS] as Partial<ExtensionSettings> | undefined;
       
-      return {
+      const finalSettings = {
         ...DEFAULT_SETTINGS,
         ...savedSettings
       };
+      
+      console.log('StorageManager: Retrieved settings:', finalSettings);
+      return finalSettings;
     } catch (error) {
       console.error('Failed to get settings:', error);
       return DEFAULT_SETTINGS;
