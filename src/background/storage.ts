@@ -87,7 +87,8 @@ export class StorageManager {
                       (settings.ocrService === 'ocrspace' && !!settings.ocrApiKey);
       
       const llmValid = (settings.llmService === 'openai' && !!settings.openaiApiKey) ||
-                      (settings.llmService === 'anthropic' && !!settings.anthropicApiKey);
+                      (settings.llmService === 'anthropic' && !!settings.anthropicApiKey) ||
+                      (settings.llmService === 'gemini' && !!settings.geminiApiKey);
       
       return { ocr: ocrValid, llm: llmValid };
     } catch (error) {
@@ -103,18 +104,21 @@ export class StorageManager {
     ocrApiKey?: string;
     openaiApiKey?: string;
     anthropicApiKey?: string;
+    geminiApiKey?: string;
   }> {
     try {
       const result = await chrome.storage.sync.get([
         STORAGE_KEYS.OCR_API_KEY,
         STORAGE_KEYS.OPENAI_API_KEY,
-        STORAGE_KEYS.ANTHROPIC_API_KEY
+        STORAGE_KEYS.ANTHROPIC_API_KEY,
+        STORAGE_KEYS.GEMINI_API_KEY
       ]);
       
       return {
         ocrApiKey: result[STORAGE_KEYS.OCR_API_KEY] || undefined,
         openaiApiKey: result[STORAGE_KEYS.OPENAI_API_KEY] || undefined,
-        anthropicApiKey: result[STORAGE_KEYS.ANTHROPIC_API_KEY] || undefined
+        anthropicApiKey: result[STORAGE_KEYS.ANTHROPIC_API_KEY] || undefined,
+        geminiApiKey: result[STORAGE_KEYS.GEMINI_API_KEY] || undefined
       };
     } catch (error) {
       console.error('Failed to get API keys:', error);

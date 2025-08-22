@@ -31,6 +31,8 @@ class BackgroundService {
         this.llmService.setOpenAIKey(apiKeys.openaiApiKey);
       } else if (settings.llmService === 'anthropic' && apiKeys.anthropicApiKey) {
         this.llmService.setAnthropicKey(apiKeys.anthropicApiKey);
+      } else if (settings.llmService === 'gemini' && apiKeys.geminiApiKey) {
+        this.llmService.setGeminiKey(apiKeys.geminiApiKey);
       }
 
       console.log('Background service initialized');

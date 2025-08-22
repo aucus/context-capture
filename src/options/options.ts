@@ -9,6 +9,7 @@ class OptionsPage {
   private ocrApiKeyGroup: HTMLDivElement;
   private openaiApiKeyGroup: HTMLDivElement;
   private anthropicApiKeyGroup: HTMLDivElement;
+  private geminiApiKeyGroup: HTMLDivElement;
 
   constructor() {
     this.form = document.getElementById('settingsForm') as HTMLFormElement;
@@ -18,6 +19,7 @@ class OptionsPage {
     this.ocrApiKeyGroup = document.getElementById('ocrApiKeyGroup') as HTMLDivElement;
     this.openaiApiKeyGroup = document.getElementById('openaiApiKeyGroup') as HTMLDivElement;
     this.anthropicApiKeyGroup = document.getElementById('anthropicApiKeyGroup') as HTMLDivElement;
+    this.geminiApiKeyGroup = document.getElementById('geminiApiKeyGroup') as HTMLDivElement;
 
     this.initializeEventListeners();
     this.loadSettings();
@@ -83,6 +85,7 @@ class OptionsPage {
     this.llmServiceSelect.value = settings.llmService;
     (document.getElementById('openaiApiKey') as HTMLInputElement).value = settings.openaiApiKey || '';
     (document.getElementById('anthropicApiKey') as HTMLInputElement).value = settings.anthropicApiKey || '';
+    (document.getElementById('geminiApiKey') as HTMLInputElement).value = settings.geminiApiKey || '';
 
     // Theme
     (document.getElementById('theme') as HTMLSelectElement).value = settings.theme;
@@ -103,12 +106,19 @@ class OptionsPage {
     if (llmService === 'openai') {
       this.openaiApiKeyGroup.style.display = 'block';
       this.anthropicApiKeyGroup.style.display = 'none';
+      this.geminiApiKeyGroup.style.display = 'none';
     } else if (llmService === 'anthropic') {
       this.openaiApiKeyGroup.style.display = 'none';
       this.anthropicApiKeyGroup.style.display = 'block';
+      this.geminiApiKeyGroup.style.display = 'none';
+    } else if (llmService === 'gemini') {
+      this.openaiApiKeyGroup.style.display = 'none';
+      this.anthropicApiKeyGroup.style.display = 'none';
+      this.geminiApiKeyGroup.style.display = 'block';
     } else {
       this.openaiApiKeyGroup.style.display = 'none';
       this.anthropicApiKeyGroup.style.display = 'none';
+      this.geminiApiKeyGroup.style.display = 'none';
     }
   }
 
@@ -117,7 +127,7 @@ class OptionsPage {
       const formData = new FormData(this.form);
       const settings: Partial<ExtensionSettings> = {
         ocrService: formData.get('ocrService') as 'ocrspace' | 'tesseract',
-        llmService: formData.get('llmService') as 'openai' | 'anthropic',
+        llmService: formData.get('llmService') as 'openai' | 'anthropic' | 'gemini',
         theme: formData.get('theme') as 'light' | 'dark' | 'system'
       };
 
@@ -130,6 +140,8 @@ class OptionsPage {
         settings.openaiApiKey = formData.get('openaiApiKey') as string;
       } else if (settings.llmService === 'anthropic') {
         settings.anthropicApiKey = formData.get('anthropicApiKey') as string;
+      } else if (settings.llmService === 'gemini') {
+        settings.geminiApiKey = formData.get('geminiApiKey') as string;
       }
 
       const response = await chrome.runtime.sendMessage({
@@ -225,6 +237,7 @@ class OptionsPage {
           ocrApiKey: '',
           openaiApiKey: '',
           anthropicApiKey: '',
+          geminiApiKey: '',
           ocrService: 'tesseract',
           llmService: 'openai',
           theme: 'system'

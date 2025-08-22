@@ -68,8 +68,9 @@ export interface ExtensionSettings {
   ocrApiKey?: string;
   openaiApiKey?: string;
   anthropicApiKey?: string;
+  geminiApiKey?: string;
   ocrService: 'ocrspace' | 'tesseract';
-  llmService: 'openai' | 'anthropic';
+  llmService: 'openai' | 'anthropic' | 'gemini';
   theme: 'light' | 'dark' | 'system';
 }
 
@@ -104,6 +105,19 @@ export interface OpenAIResponse {
 export interface AnthropicResponse {
   content: Array<{
     text: string;
+  }>;
+  error?: {
+    message: string;
+  };
+}
+
+export interface GeminiResponse {
+  candidates: Array<{
+    content: {
+      parts: Array<{
+        text: string;
+      }>;
+    };
   }>;
   error?: {
     message: string;

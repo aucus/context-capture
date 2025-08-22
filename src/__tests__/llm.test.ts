@@ -60,6 +60,35 @@ describe('LLMService', () => {
       expect(result.summary).toContain('This is a test summary');
     });
 
+    it('should generate summary using Google Gemini API', async () => {
+      const mockResponse = {
+        candidates: [
+          {
+            content: {
+              parts: [
+                {
+                  text: 'This is a test summary in three lines.\nSecond line of the summary.\nThird line completes the summary.'
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse)
+      });
+
+      llmService.setGeminiKey('test-gemini-key');
+      llmService.setService('gemini');
+
+      const result = await llmService.generateSummary('This is a test text that needs to be summarized.');
+
+      expect(result.success).toBe(true);
+      expect(result.summary).toContain('This is a test summary');
+    });
+
     it('should handle API errors', async () => {
       (fetch as jest.Mock).mockResolvedValue({
         ok: false,

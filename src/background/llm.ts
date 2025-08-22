@@ -1,10 +1,11 @@
-import { SummaryResult, OpenAIResponse, AnthropicResponse } from '../shared/types';
+import { SummaryResult, OpenAIResponse, AnthropicResponse, GeminiResponse } from '../shared/types';
 import { API_ENDPOINTS, API_LIMITS } from '../shared/constants';
 
 export class LLMService {
   private openaiApiKey: string | null = null;
   private anthropicApiKey: string | null = null;
-  private service: 'openai' | 'anthropic' = 'openai';
+  private geminiApiKey: string | null = null;
+  private service: 'openai' | 'anthropic' | 'gemini' = 'openai';
 
   constructor() {}
 
@@ -16,7 +17,11 @@ export class LLMService {
     this.anthropicApiKey = apiKey;
   }
 
-  public setService(service: 'openai' | 'anthropic'): void {
+  public setGeminiKey(apiKey: string): void {
+    this.geminiApiKey = apiKey;
+  }
+
+  public setService(service: 'openai' | 'anthropic' | 'gemini'): void {
     this.service = service;
   }
 
@@ -27,8 +32,10 @@ export class LLMService {
     try {
       if (this.service === 'openai') {
         return await this.generateSummaryWithOpenAI(text);
-      } else {
+      } else if (this.service === 'anthropic') {
         return await this.generateSummaryWithAnthropic(text);
+      } else {
+        return await this.generateSummaryWithGemini(text);
       }
     } catch (error) {
       console.error('LLM summarization failed:', error);
@@ -143,6 +150,64 @@ export class LLMService {
     }
 
     const summary = data.content[0]?.text?.trim() || '';
+
+    return {
+      summary,
+      success: true
+    };
+  }
+
+  /**
+   * Generate summary using Google Gemini
+   */
+  private async generateSummaryWithGemini(text: string): Promise<SummaryResult> {
+    if (!this.geminiApiKey) {
+      throw new Error('Gemini API key not configured');
+    }
+
+    // Truncate text if too long
+    const truncatedText = this.truncateText(text, API_LIMITS.GEMINI_MAX_TOKENS * 3);
+
+    const url = `${API_ENDPOINTS.GEMINI}?key=${this.geminiApiKey}`;
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        contents: [
+          {
+            parts: [
+              {
+                text: `Summarize the following text in exactly 3 lines, focusing on key points:\n\n${truncatedText}`
+              }
+            ]
+          }
+        ],
+        generationConfig: {
+          maxOutputTokens: 150,
+          temperature: 0.3
+        }
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Gemini API request failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data: GeminiResponse = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    if (!data.candidates || data.candidates.length === 0) {
+      throw new Error('No response from Gemini');
+    }
+
+    const summary = data.candidates[0]?.content?.parts[0]?.text?.trim() || '';
 
     return {
       summary,

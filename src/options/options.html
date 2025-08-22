@@ -47,6 +47,7 @@
                         <select id="llmService" name="llmService">
                             <option value="openai">OpenAI GPT</option>
                             <option value="anthropic">Anthropic Claude</option>
+                            <option value="gemini">Google Gemini</option>
                         </select>
                     </div>
                     
@@ -65,6 +66,15 @@
                         <small>
                             Get your API key from 
                             <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a>
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" id="geminiApiKeyGroup" style="display: none;">
+                        <label for="geminiApiKey">Google Gemini API Key:</label>
+                        <input type="password" id="geminiApiKey" name="geminiApiKey" placeholder="Enter your Google Gemini API key">
+                        <small>
+                            Get your API key from 
+                            <a href="https://makersuite.google.com/app/apikey" target="_blank">Google AI Studio</a>
                         </small>
                     </div>
                     

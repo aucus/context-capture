@@ -14,7 +14,8 @@
   "host_permissions": [
     "https://api.ocr.space/*",
     "https://api.openai.com/*",
-    "https://api.anthropic.com/*"
+    "https://api.anthropic.com/*",
+    "https://generativelanguage.googleapis.com/*"
   ],
   
   "background": {

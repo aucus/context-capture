@@ -2,14 +2,16 @@
 export const API_ENDPOINTS = {
   OCR_SPACE: 'https://api.ocr.space/parse/image',
   OPENAI: 'https://api.openai.com/v1/chat/completions',
-  ANTHROPIC: 'https://api.anthropic.com/v1/messages'
+  ANTHROPIC: 'https://api.anthropic.com/v1/messages',
+  GEMINI: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
 } as const;
 
 // API Limits
 export const API_LIMITS = {
   OCR_SPACE_FREE_TIER: 500, // calls per day
   OPENAI_MAX_TOKENS: 4096,
-  ANTHROPIC_MAX_TOKENS: 4096
+  ANTHROPIC_MAX_TOKENS: 4096,
+  GEMINI_MAX_TOKENS: 8192
 } as const;
 
 // Chrome Extension Constants
@@ -47,6 +49,7 @@ export const STORAGE_KEYS = {
   OCR_API_KEY: 'ocrApiKey',
   OPENAI_API_KEY: 'openaiApiKey',
   ANTHROPIC_API_KEY: 'anthropicApiKey',
+  GEMINI_API_KEY: 'geminiApiKey',
   OCR_SERVICE: 'ocrService',
   LLM_SERVICE: 'llmService',
   THEME: 'theme'
