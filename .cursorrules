@@ -1,0 +1,219 @@
+# ContextCapture Chrome Extension - Cursor Rules
+
+## Project Overview
+ContextCapture is a Chrome extension (Manifest V3) that captures screen regions, performs OCR text extraction, and generates 3-line summaries using LLM APIs. The extension enables users to select areas on web pages, extract text via OCR, and get AI-powered summaries with copy-to-clipboard functionality.
+
+## Architecture Guidelines
+
+### Chrome Extension Structure
+- Use Manifest V3 for all Chrome extension configurations
+- Follow the established directory structure:
+  - `src/content-script/` - Web page interaction and UI
+  - `src/background/` - Service worker for API calls
+  - `src/popup/` - Extension popup interface
+  - `src/options/` - Settings and configuration page
+  - `src/shared/` - Common utilities and types
+
+### Key Development Principles
+- All API calls must go through background service worker
+- Content scripts should never directly access API keys
+- Use Chrome extension APIs through message passing
+- Implement proper cleanup for event listeners and DOM modifications
+
+## Code Standards
+
+### TypeScript Configuration
+- Use strict TypeScript settings
+- Define proper interfaces for all data structures
+- Use type-safe Chrome extension APIs
+- Implement proper error handling with typed errors
+
+### Security Requirements
+- Store API keys only in Chrome extension storage (background script access)
+- Never log sensitive data in content script context
+- Implement Content Security Policy
+- Use minimum required permissions
+
+### UI/UX Guidelines
+- Follow macOS-inspired design with rounded corners and clean typography
+- Use Feather/Lucide icon set for consistency
+- Support system-adaptive colors with light/dark mode
+- Position results popup near selected region (top-right preferred)
+- Implement loading states during OCR and summarization
+
+## API Integration Standards
+
+### OCR Services
+- Primary: OCR.Space API (free tier: 500 calls/day)
+- Fallback: Tesseract.js (local processing)
+- Implement retry logic with exponential backoff
+- Handle API rate limits gracefully
+
+### LLM Services
+- Support OpenAI GPT and Anthropic Claude APIs
+- Use prompt: "Summarize the following text in exactly 3 lines, focusing on key points:"
+- Implement token limit handling and text chunking
+- Store API keys in Chrome storage.sync for cross-device sync
+
+## Error Handling Patterns
+
+### User-Facing Errors
+- "Please select an area to capture" - No selection made
+- "Text recognition failed, please try again" - OCR failure
+- "Summary generation failed, check network and API key" - LLM API failure
+- "Please check your API key in settings" - Invalid API key
+
+### Developer Error Handling
+- Implement comprehensive API response validation
+- Set appropriate network timeouts
+- Log errors for debugging (without sensitive data)
+- Provide fallback mechanisms for critical failures
+
+## Development Workflow
+
+### Testing Requirements
+- Test region selection and UI overlay functionality
+- Test API integrations independently
+- Perform end-to-end capture → OCR → summarization flow testing
+- Test in various websites and scenarios
+- Simulate API failures and edge cases
+
+### Build and Development Commands
+- Use `npm run build` for production builds
+- Use `npm run dev` for development with watch mode
+- Use `npm test` for unit testing
+- Use `npm run lint` for code quality checks
+- Use `npm run type-check` for TypeScript validation
+
+## File Naming and Organization
+
+### Content Scripts
+- `selector.ts` - Region selection logic
+- `ui.ts` - Results popup and styling
+- `capture.ts` - Screen capture coordination
+
+### Background Scripts
+- `ocr.ts` - OCR API integration
+- `llm.ts` - LLM API integration
+- `storage.ts` - Settings and API key management
+
+### Shared Utilities
+- `types.ts` - TypeScript interfaces
+- `constants.ts` - API endpoints and limits
+- `utils.ts` - Helper functions
+
+## Performance Considerations
+
+### Optimization Requirements
+- Optimize image compression for OCR
+- Minimize API call frequency
+- Optimize memory usage in content scripts
+- Keep bundle size minimal
+- Implement proper cleanup for DOM modifications
+
+### Resource Management
+- Use Chrome tabs.captureVisibleTab API efficiently
+- Implement proper image cropping and processing
+- Handle large text content appropriately
+- Manage API rate limits and quotas
+
+## Code Quality Standards
+
+### Documentation
+- Document all public functions and interfaces
+- Include JSDoc comments for complex logic
+- Maintain clear README and setup instructions
+- Document API integration patterns
+
+### Code Style
+- Use consistent naming conventions
+- Implement proper error boundaries
+- Write self-documenting code
+- Follow Chrome extension best practices
+
+## Testing Strategy
+
+### Unit Testing
+- Test OCR service functionality
+- Test LLM service integration
+- Test utility functions
+- Test settings storage/retrieval
+
+### Integration Testing
+- Test complete workflow: selection → capture → OCR → summarization
+- Test across different website types
+- Test with various text content types
+- Test error scenarios and recovery
+
+### User Experience Testing
+- Validate region selection UI/UX
+- Test result popup positioning
+- Verify loading state feedback
+- Test error message clarity
+
+## Deployment Guidelines
+
+### Chrome Web Store Requirements
+- Create appropriate extension icons
+- Write clear store descriptions
+- Prepare screenshots and demos
+- Implement privacy policy
+
+### Security Review
+- Review API key handling
+- Validate permission usage
+- Check for potential security vulnerabilities
+- Ensure proper data handling
+
+## Future Considerations
+
+### Scalability
+- Design for multiple OCR/LLM service support
+- Plan for internationalization
+- Consider team collaboration features
+- Prepare for advanced export formats
+
+### Maintenance
+- Implement proper logging for debugging
+- Plan for API service changes
+- Consider user feedback mechanisms
+- Prepare for Chrome extension API updates
+
+## Common Patterns to Follow
+
+### Message Passing
+```typescript
+// Content script to background
+chrome.runtime.sendMessage({ type: 'CAPTURE_REGION', data: regionData });
+
+// Background to content script
+chrome.tabs.sendMessage(tabId, { type: 'SHOW_RESULTS', data: results });
+```
+
+### Error Handling
+```typescript
+try {
+  const result = await apiCall();
+  return result;
+} catch (error) {
+  console.error('API call failed:', error);
+  throw new Error('User-friendly error message');
+}
+```
+
+### Storage Management
+```typescript
+// Save settings
+await chrome.storage.sync.set({ apiKey: encryptedKey });
+
+// Load settings
+const { apiKey } = await chrome.storage.sync.get(['apiKey']);
+```
+
+## Priority Development Order
+
+1. **Phase 1 (MVP)**: Region selection, OCR integration, LLM summarization, result display
+2. **Phase 2 (Stability)**: Error handling, settings management, basic testing
+3. **Phase 3 (Deployment)**: Performance optimization, security review, store preparation
+
+Remember: Always prioritize user experience, security, and code maintainability in all development decisions.

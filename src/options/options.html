@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ContextCapture Settings</title>
+    <link rel="stylesheet" href="options.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>ContextCapture Settings</h1>
+            <p>Configure your API keys and preferences</p>
+        </header>
+
+        <main>
+            <form id="settingsForm">
+                <!-- OCR Settings -->
+                <section class="settings-section">
+                    <h2>OCR Service</h2>
+                    <div class="form-group">
+                        <label for="ocrService">OCR Service:</label>
+                        <select id="ocrService" name="ocrService">
+                            <option value="ocrspace">OCR.Space API</option>
+                            <option value="tesseract">Tesseract.js (Local)</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="ocrApiKeyGroup">
+                        <label for="ocrApiKey">OCR.Space API Key:</label>
+                        <input type="password" id="ocrApiKey" name="ocrApiKey" placeholder="Enter your OCR.Space API key">
+                        <small>
+                            Get your free API key from 
+                            <a href="https://ocr.space/ocrapi" target="_blank">OCR.Space</a> 
+                            (500 calls/day free)
+                        </small>
+                    </div>
+                    
+                    <button type="button" id="testOcrBtn" class="test-btn">Test OCR Service</button>
+                </section>
+
+                <!-- LLM Settings -->
+                <section class="settings-section">
+                    <h2>AI Summary Service</h2>
+                    <div class="form-group">
+                        <label for="llmService">LLM Service:</label>
+                        <select id="llmService" name="llmService">
+                            <option value="openai">OpenAI GPT</option>
+                            <option value="anthropic">Anthropic Claude</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group" id="openaiApiKeyGroup">
+                        <label for="openaiApiKey">OpenAI API Key:</label>
+                        <input type="password" id="openaiApiKey" name="openaiApiKey" placeholder="Enter your OpenAI API key">
+                        <small>
+                            Get your API key from 
+                            <a href="https://platform.openai.com/api-keys" target="_blank">OpenAI Platform</a>
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" id="anthropicApiKeyGroup" style="display: none;">
+                        <label for="anthropicApiKey">Anthropic API Key:</label>
+                        <input type="password" id="anthropicApiKey" name="anthropicApiKey" placeholder="Enter your Anthropic API key">
+                        <small>
+                            Get your API key from 
+                            <a href="https://console.anthropic.com/" target="_blank">Anthropic Console</a>
+                        </small>
+                    </div>
+                    
+                    <button type="button" id="testLlmBtn" class="test-btn">Test LLM Service</button>
+                </section>
+
+                <!-- Theme Settings -->
+                <section class="settings-section">
+                    <h2>Appearance</h2>
+                    <div class="form-group">
+                        <label for="theme">Theme:</label>
+                        <select id="theme" name="theme">
+                            <option value="system">System Default</option>
+                            <option value="light">Light</option>
+                            <option value="dark">Dark</option>
+                        </select>
+                    </div>
+                </section>
+
+                <!-- Action Buttons -->
+                <section class="actions">
+                    <button type="submit" class="save-btn">Save Settings</button>
+                    <button type="button" id="clearBtn" class="clear-btn">Clear All Settings</button>
+                </section>
+            </form>
+        </main>
+
+        <!-- Status Messages -->
+        <div id="status" class="status"></div>
+    </div>
+
+    <script src="options.js"></script>
+</body>
+</html>

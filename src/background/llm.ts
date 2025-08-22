@@ -1,0 +1,183 @@
+import { SummaryResult, OpenAIResponse, AnthropicResponse } from '../shared/types';
+import { API_ENDPOINTS, API_LIMITS } from '../shared/constants';
+
+export class LLMService {
+  private openaiApiKey: string | null = null;
+  private anthropicApiKey: string | null = null;
+  private service: 'openai' | 'anthropic' = 'openai';
+
+  constructor() {}
+
+  public setOpenAIKey(apiKey: string): void {
+    this.openaiApiKey = apiKey;
+  }
+
+  public setAnthropicKey(apiKey: string): void {
+    this.anthropicApiKey = apiKey;
+  }
+
+  public setService(service: 'openai' | 'anthropic'): void {
+    this.service = service;
+  }
+
+  /**
+   * Generate 3-line summary from text using LLM
+   */
+  public async generateSummary(text: string): Promise<SummaryResult> {
+    try {
+      if (this.service === 'openai') {
+        return await this.generateSummaryWithOpenAI(text);
+      } else {
+        return await this.generateSummaryWithAnthropic(text);
+      }
+    } catch (error) {
+      console.error('LLM summarization failed:', error);
+      return {
+        summary: '',
+        success: false,
+        error: 'Summary generation failed, check network and API key'
+      };
+    }
+  }
+
+  /**
+   * Generate summary using OpenAI GPT
+   */
+  private async generateSummaryWithOpenAI(text: string): Promise<SummaryResult> {
+    if (!this.openaiApiKey) {
+      throw new Error('OpenAI API key not configured');
+    }
+
+    // Truncate text if too long
+    const truncatedText = this.truncateText(text, API_LIMITS.OPENAI_MAX_TOKENS * 3);
+
+    const response = await fetch(API_ENDPOINTS.OPENAI, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${this.openaiApiKey}`
+      },
+      body: JSON.stringify({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are a helpful assistant that summarizes text in exactly 3 lines, focusing on key points.'
+          },
+          {
+            role: 'user',
+            content: `Summarize the following text in exactly 3 lines, focusing on key points:\n\n${truncatedText}`
+          }
+        ],
+        max_tokens: 150,
+        temperature: 0.3
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`OpenAI API request failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data: OpenAIResponse = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    if (!data.choices || data.choices.length === 0) {
+      throw new Error('No response from OpenAI');
+    }
+
+    const summary = data.choices[0].message.content.trim();
+
+    return {
+      summary,
+      success: true
+    };
+  }
+
+  /**
+   * Generate summary using Anthropic Claude
+   */
+  private async generateSummaryWithAnthropic(text: string): Promise<SummaryResult> {
+    if (!this.anthropicApiKey) {
+      throw new Error('Anthropic API key not configured');
+    }
+
+    // Truncate text if too long
+    const truncatedText = this.truncateText(text, API_LIMITS.ANTHROPIC_MAX_TOKENS * 3);
+
+    const response = await fetch(API_ENDPOINTS.ANTHROPIC, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': this.anthropicApiKey,
+        'anthropic-version': '2023-06-01'
+      },
+      body: JSON.stringify({
+        model: 'claude-3-haiku-20240307',
+        max_tokens: 150,
+        messages: [
+          {
+            role: 'user',
+            content: `Summarize the following text in exactly 3 lines, focusing on key points:\n\n${truncatedText}`
+          }
+        ]
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(`Anthropic API request failed: ${response.status} - ${errorData.error?.message || 'Unknown error'}`);
+    }
+
+    const data: AnthropicResponse = await response.json();
+
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    if (!data.content || data.content.length === 0) {
+      throw new Error('No response from Anthropic');
+    }
+
+    const summary = data.content[0].text.trim();
+
+    return {
+      summary,
+      success: true
+    };
+  }
+
+  /**
+   * Truncate text to fit within token limits
+   */
+  private truncateText(text: string, maxTokens: number): string {
+    // Rough estimation: 1 token ≈ 4 characters
+    const maxChars = maxTokens * 4;
+    
+    if (text.length <= maxChars) {
+      return text;
+    }
+
+    // Truncate and add ellipsis
+    return text.substring(0, maxChars - 3) + '...';
+  }
+
+  /**
+   * Test LLM service with sample text
+   */
+  public async testLLM(): Promise<boolean> {
+    try {
+      const testText = 'This is a test text for LLM summarization. It contains multiple sentences to test the summarization capabilities. The summary should be generated in exactly 3 lines.';
+      
+      const result = await this.generateSummary(testText);
+      
+      return result.success && result.summary.split('\n').length <= 3;
+    } catch (error) {
+      console.error('LLM test failed:', error);
+      return false;
+    }
+  }
+}
