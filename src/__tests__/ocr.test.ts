@@ -11,8 +11,84 @@ describe('OCRService', () => {
     jest.clearAllMocks();
   });
 
-  describe('extractText', () => {
-    it('should extract text using OCR.Space API', async () => {
+    describe('extractText', () => {
+    it('should extract text using Google Vision API', async () => {
+      const mockResponse = {
+        responses: [
+          {
+            fullTextAnnotation: {
+              text: 'Test Google Vision text',
+              pages: [
+                {
+                  blocks: [
+                    {
+                      paragraphs: [
+                        {
+                          words: [
+                            {
+                              confidence: 0.95,
+                              symbols: [{ confidence: 0.95 }]
+                            },
+                            {
+                              confidence: 0.90,
+                              symbols: [{ confidence: 0.90 }]
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse)
+      });
+
+      ocrService.setApiKey('test-google-vision-key');
+      ocrService.setService('googlevision');
+
+      const result = await ocrService.extractText('data:image/png;base64,test');
+
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Test Google Vision text');
+      expect(result.confidence).toBe(93); // Average confidence * 100
+    });
+
+    it('should extract text using Google Vision API with textAnnotations fallback', async () => {
+      const mockResponse = {
+        responses: [
+          {
+            textAnnotations: [
+              {
+                description: 'Test Google Vision text'
+              }
+            ]
+          }
+        ]
+      };
+
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(mockResponse)
+      });
+
+      ocrService.setApiKey('test-google-vision-key');
+      ocrService.setService('googlevision');
+
+      const result = await ocrService.extractText('data:image/png;base64,test');
+
+      expect(result.success).toBe(true);
+      expect(result.text).toBe('Test Google Vision text');
+      expect(result.confidence).toBe(85); // Default confidence for textAnnotations
+    });
+
+        it('should extract text using OCR.Space API', async () => {
       const mockResponse = {
         ParsedResults: [
           {

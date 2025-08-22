@@ -1,6 +1,7 @@
 // API Endpoints
 export const API_ENDPOINTS = {
   OCR_SPACE: 'https://api.ocr.space/parse/image',
+  GOOGLE_VISION: 'https://vision.googleapis.com/v1/images:annotate',
   OPENAI: 'https://api.openai.com/v1/chat/completions',
   ANTHROPIC: 'https://api.anthropic.com/v1/messages',
   GEMINI: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
@@ -47,6 +48,7 @@ export const MESSAGE_TYPES = {
 export const STORAGE_KEYS = {
   SETTINGS: 'extensionSettings',
   OCR_API_KEY: 'ocrApiKey',
+  GOOGLE_VISION_API_KEY: 'googleVisionApiKey',
   OPENAI_API_KEY: 'openaiApiKey',
   ANTHROPIC_API_KEY: 'anthropicApiKey',
   GEMINI_API_KEY: 'geminiApiKey',
@@ -57,7 +59,7 @@ export const STORAGE_KEYS = {
 
 // Default Settings
 export const DEFAULT_SETTINGS = {
-  ocrService: 'ocrspace' as const,
+  ocrService: 'googlevision' as const,
   llmService: 'openai' as const,
   theme: 'system' as const
 } as const;

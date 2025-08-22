@@ -40,7 +40,7 @@ describe('StorageManager', () => {
       const settings = await StorageManager.getSettings();
 
       expect(settings).toEqual({
-        ocrService: 'ocrspace',
+        ocrService: 'googlevision',
         llmService: 'openai',
         theme: 'system'
       });
@@ -71,7 +71,7 @@ describe('StorageManager', () => {
       const settings = await StorageManager.getSettings();
 
       expect(settings).toEqual({
-        ocrService: 'ocrspace',
+        ocrService: 'googlevision',
         llmService: 'openai',
         theme: 'system'
       });

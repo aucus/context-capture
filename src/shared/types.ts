@@ -69,7 +69,8 @@ export interface ExtensionSettings {
   openaiApiKey?: string;
   anthropicApiKey?: string;
   geminiApiKey?: string;
-  ocrService: 'ocrspace' | 'tesseract';
+  googleVisionApiKey?: string;
+  ocrService: 'googlevision' | 'ocrspace' | 'tesseract';
   llmService: 'openai' | 'anthropic' | 'gemini';
   theme: 'light' | 'dark' | 'system';
 }
@@ -116,6 +117,38 @@ export interface GeminiResponse {
     content: {
       parts: Array<{
         text: string;
+      }>;
+    };
+  }>;
+  error?: {
+    message: string;
+  };
+}
+
+export interface GoogleVisionResponse {
+  responses: Array<{
+    textAnnotations?: Array<{
+      description: string;
+      boundingPoly?: {
+        vertices: Array<{
+          x: number;
+          y: number;
+        }>;
+      };
+    }>;
+    fullTextAnnotation?: {
+      text: string;
+      pages: Array<{
+        blocks: Array<{
+          paragraphs: Array<{
+            words: Array<{
+              confidence: number;
+              symbols: Array<{
+                confidence: number;
+              }>;
+            }>;
+          }>;
+        }>;
       }>;
     };
   }>;

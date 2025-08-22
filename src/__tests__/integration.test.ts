@@ -248,6 +248,40 @@ describe('ContextCapture Integration Tests', () => {
     });
 
     it('should switch between OCR services', async () => {
+      // Test Google Vision
+      const googleVisionResponse = {
+        responses: [
+          {
+            fullTextAnnotation: {
+              text: 'Google Vision result',
+              pages: [
+                {
+                  blocks: [
+                    {
+                      paragraphs: [
+                        {
+                          words: [{ confidence: 0.95, symbols: [{ confidence: 0.95 }] }]
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ]
+      };
+
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: () => Promise.resolve(googleVisionResponse)
+      });
+
+      ocrService.setApiKey('test-google-vision');
+      ocrService.setService('googlevision');
+      let result = await ocrService.extractText('data:image/png;base64,test');
+      expect(result.text).toBe('Google Vision result');
+
       // Test OCR.Space
       const ocrSpaceResponse = {
         ParsedResults: [{ ParsedText: 'OCR.Space result' }],
@@ -261,7 +295,7 @@ describe('ContextCapture Integration Tests', () => {
 
       ocrService.setApiKey('test-ocr');
       ocrService.setService('ocrspace');
-      let result = await ocrService.extractText('data:image/png;base64,test');
+      result = await ocrService.extractText('data:image/png;base64,test');
       expect(result.text).toBe('OCR.Space result');
 
       // Test Tesseract.js (local)

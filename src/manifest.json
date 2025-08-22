@@ -13,6 +13,7 @@
   
   "host_permissions": [
     "https://api.ocr.space/*",
+    "https://vision.googleapis.com/*",
     "https://api.openai.com/*",
     "https://api.anthropic.com/*",
     "https://generativelanguage.googleapis.com/*"

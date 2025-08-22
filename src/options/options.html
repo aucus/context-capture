@@ -21,12 +21,22 @@
                     <div class="form-group">
                         <label for="ocrService">OCR Service:</label>
                         <select id="ocrService" name="ocrService">
+                            <option value="googlevision">Google Vision API</option>
                             <option value="ocrspace">OCR.Space API</option>
                             <option value="tesseract">Tesseract.js (Local)</option>
                         </select>
                     </div>
                     
-                    <div class="form-group" id="ocrApiKeyGroup">
+                    <div class="form-group" id="googleVisionApiKeyGroup">
+                        <label for="googleVisionApiKey">Google Vision API Key:</label>
+                        <input type="password" id="googleVisionApiKey" name="googleVisionApiKey" placeholder="Enter your Google Vision API key">
+                        <small>
+                            Get your API key from 
+                            <a href="https://console.cloud.google.com/apis/credentials" target="_blank">Google Cloud Console</a>
+                        </small>
+                    </div>
+                    
+                    <div class="form-group" id="ocrApiKeyGroup" style="display: none;">
                         <label for="ocrApiKey">OCR.Space API Key:</label>
                         <input type="password" id="ocrApiKey" name="ocrApiKey" placeholder="Enter your OCR.Space API key">
                         <small>

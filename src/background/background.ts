@@ -23,6 +23,8 @@ class BackgroundService {
       this.ocrService.setService(settings.ocrService);
       if (settings.ocrService === 'ocrspace' && apiKeys.ocrApiKey) {
         this.ocrService.setApiKey(apiKeys.ocrApiKey);
+      } else if (settings.ocrService === 'googlevision' && apiKeys.googleVisionApiKey) {
+        this.ocrService.setApiKey(apiKeys.googleVisionApiKey);
       }
 
       // Configure LLM service

@@ -84,7 +84,8 @@ export class StorageManager {
       const settings = await this.getSettings();
       
       const ocrValid = settings.ocrService === 'tesseract' || 
-                      (settings.ocrService === 'ocrspace' && !!settings.ocrApiKey);
+                      (settings.ocrService === 'ocrspace' && !!settings.ocrApiKey) ||
+                      (settings.ocrService === 'googlevision' && !!settings.googleVisionApiKey);
       
       const llmValid = (settings.llmService === 'openai' && !!settings.openaiApiKey) ||
                       (settings.llmService === 'anthropic' && !!settings.anthropicApiKey) ||
@@ -102,6 +103,7 @@ export class StorageManager {
    */
   public static async getAllApiKeys(): Promise<{
     ocrApiKey?: string;
+    googleVisionApiKey?: string;
     openaiApiKey?: string;
     anthropicApiKey?: string;
     geminiApiKey?: string;
@@ -109,6 +111,7 @@ export class StorageManager {
     try {
       const result = await chrome.storage.sync.get([
         STORAGE_KEYS.OCR_API_KEY,
+        STORAGE_KEYS.GOOGLE_VISION_API_KEY,
         STORAGE_KEYS.OPENAI_API_KEY,
         STORAGE_KEYS.ANTHROPIC_API_KEY,
         STORAGE_KEYS.GEMINI_API_KEY
@@ -116,6 +119,7 @@ export class StorageManager {
       
       return {
         ocrApiKey: result[STORAGE_KEYS.OCR_API_KEY] || undefined,
+        googleVisionApiKey: result[STORAGE_KEYS.GOOGLE_VISION_API_KEY] || undefined,
         openaiApiKey: result[STORAGE_KEYS.OPENAI_API_KEY] || undefined,
         anthropicApiKey: result[STORAGE_KEYS.ANTHROPIC_API_KEY] || undefined,
         geminiApiKey: result[STORAGE_KEYS.GEMINI_API_KEY] || undefined

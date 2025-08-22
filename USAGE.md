@@ -18,13 +18,14 @@
 1. 확장 프로그램 아이콘 클릭
 2. "Settings" 버튼 클릭
 3. API 키 입력:
+   - **Google Vision API Key**: [Google Cloud Console](https://console.cloud.google.com/apis/credentials)에서 발급 (기본값)
    - **OCR.Space API Key**: [OCR.Space](https://ocr.space/ocrapi)에서 무료 키 발급 (일일 500회)
    - **OpenAI API Key**: [OpenAI Platform](https://platform.openai.com/api-keys)에서 발급
    - **Anthropic API Key**: [Anthropic Console](https://console.anthropic.com/)에서 발급
    - **Google Gemini API Key**: [Google AI Studio](https://makersuite.google.com/app/apikey)에서 발급
 
 ### 2. 서비스 선택
-- **OCR 서비스**: OCR.Space API 또는 Tesseract.js (로컬)
+- **OCR 서비스**: Google Vision API (기본값), OCR.Space API 또는 Tesseract.js (로컬)
 - **LLM 서비스**: OpenAI GPT, Anthropic Claude 또는 Google Gemini
 
 ### 3. 테스트
@@ -91,6 +92,7 @@
 - OCR 정확도 향상을 위한 전처리
 
 ### API 사용량 관리
+- Google Vision: 사용량에 따른 과금 (무료 할당량 포함)
 - OCR.Space: 일일 500회 무료 (유료 플랜으로 확장 가능)
 - OpenAI: 사용량에 따른 과금
 - Anthropic: 사용량에 따른 과금

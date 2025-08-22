@@ -6,6 +6,7 @@ class OptionsPage {
   private status: HTMLDivElement;
   private ocrServiceSelect: HTMLSelectElement;
   private llmServiceSelect: HTMLSelectElement;
+  private googleVisionApiKeyGroup: HTMLDivElement;
   private ocrApiKeyGroup: HTMLDivElement;
   private openaiApiKeyGroup: HTMLDivElement;
   private anthropicApiKeyGroup: HTMLDivElement;
@@ -16,6 +17,7 @@ class OptionsPage {
     this.status = document.getElementById('status') as HTMLDivElement;
     this.ocrServiceSelect = document.getElementById('ocrService') as HTMLSelectElement;
     this.llmServiceSelect = document.getElementById('llmService') as HTMLSelectElement;
+    this.googleVisionApiKeyGroup = document.getElementById('googleVisionApiKeyGroup') as HTMLDivElement;
     this.ocrApiKeyGroup = document.getElementById('ocrApiKeyGroup') as HTMLDivElement;
     this.openaiApiKeyGroup = document.getElementById('openaiApiKeyGroup') as HTMLDivElement;
     this.anthropicApiKeyGroup = document.getElementById('anthropicApiKeyGroup') as HTMLDivElement;
@@ -79,6 +81,7 @@ class OptionsPage {
   private populateForm(settings: ExtensionSettings): void {
     // OCR settings
     this.ocrServiceSelect.value = settings.ocrService;
+    (document.getElementById('googleVisionApiKey') as HTMLInputElement).value = settings.googleVisionApiKey || '';
     (document.getElementById('ocrApiKey') as HTMLInputElement).value = settings.ocrApiKey || '';
 
     // LLM settings
@@ -95,10 +98,15 @@ class OptionsPage {
     const ocrService = this.ocrServiceSelect.value;
     const llmService = this.llmServiceSelect.value;
 
-    // Show/hide OCR API key field
-    if (ocrService === 'ocrspace') {
+    // Show/hide OCR API key fields
+    if (ocrService === 'googlevision') {
+      this.googleVisionApiKeyGroup.style.display = 'block';
+      this.ocrApiKeyGroup.style.display = 'none';
+    } else if (ocrService === 'ocrspace') {
+      this.googleVisionApiKeyGroup.style.display = 'none';
       this.ocrApiKeyGroup.style.display = 'block';
     } else {
+      this.googleVisionApiKeyGroup.style.display = 'none';
       this.ocrApiKeyGroup.style.display = 'none';
     }
 
@@ -126,13 +134,15 @@ class OptionsPage {
     try {
       const formData = new FormData(this.form);
       const settings: Partial<ExtensionSettings> = {
-        ocrService: formData.get('ocrService') as 'ocrspace' | 'tesseract',
+        ocrService: formData.get('ocrService') as 'googlevision' | 'ocrspace' | 'tesseract',
         llmService: formData.get('llmService') as 'openai' | 'anthropic' | 'gemini',
         theme: formData.get('theme') as 'light' | 'dark' | 'system'
       };
 
       // Add API keys based on selected services
-      if (settings.ocrService === 'ocrspace') {
+      if (settings.ocrService === 'googlevision') {
+        settings.googleVisionApiKey = formData.get('googleVisionApiKey') as string;
+      } else if (settings.ocrService === 'ocrspace') {
         settings.ocrApiKey = formData.get('ocrApiKey') as string;
       }
 
@@ -235,10 +245,11 @@ class OptionsPage {
         type: MESSAGE_TYPES.SAVE_SETTINGS,
         data: {
           ocrApiKey: '',
+          googleVisionApiKey: '',
           openaiApiKey: '',
           anthropicApiKey: '',
           geminiApiKey: '',
-          ocrService: 'tesseract',
+          ocrService: 'googlevision',
           llmService: 'openai',
           theme: 'system'
         }
