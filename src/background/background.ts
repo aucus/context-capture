@@ -1,7 +1,7 @@
 import { OCRService } from './ocr';
 import { LLMService } from './llm';
 import { StorageManager } from './storage';
-import { Region, CaptureRegionMessage, OCRRequestMessage, LLMRequestMessage, ShowResultsMessage } from '../shared/types';
+import { CaptureRegionMessage, OCRRequestMessage, LLMRequestMessage, ShowResultsMessage } from '../shared/types';
 import { MESSAGE_TYPES } from '../shared/constants';
 
 class BackgroundService {
@@ -41,21 +41,21 @@ class BackgroundService {
 
   public async handleMessage(
     message: any,
-    sender: chrome.runtime.MessageSender,
+    _sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
       switch (message.type) {
         case MESSAGE_TYPES.CAPTURE_REGION:
-          await this.handleCaptureRegion(message as CaptureRegionMessage, sender, sendResponse);
+          await this.handleCaptureRegion(message as CaptureRegionMessage, _sender, sendResponse);
           break;
 
         case MESSAGE_TYPES.OCR_REQUEST:
-          await this.handleOCRRequest(message as OCRRequestMessage, sender, sendResponse);
+          await this.handleOCRRequest(message as OCRRequestMessage, _sender, sendResponse);
           break;
 
         case MESSAGE_TYPES.LLM_REQUEST:
-          await this.handleLLMRequest(message as LLMRequestMessage, sender, sendResponse);
+          await this.handleLLMRequest(message as LLMRequestMessage, _sender, sendResponse);
           break;
 
         case MESSAGE_TYPES.GET_SETTINGS:
@@ -81,14 +81,14 @@ class BackgroundService {
 
   private async handleCaptureRegion(
     message: CaptureRegionMessage,
-    sender: chrome.runtime.MessageSender,
+    _sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
       const { region, tabId } = message.data;
 
       // Capture the visible tab
-      const dataUrl = await chrome.tabs.captureVisibleTab(null, {
+      const dataUrl = await chrome.tabs.captureVisibleTab(null as any, {
         format: 'png',
         quality: 100
       });
@@ -138,7 +138,7 @@ class BackgroundService {
 
   private async handleOCRRequest(
     message: OCRRequestMessage,
-    sender: chrome.runtime.MessageSender,
+    _sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
@@ -152,7 +152,7 @@ class BackgroundService {
 
   private async handleLLMRequest(
     message: LLMRequestMessage,
-    sender: chrome.runtime.MessageSender,
+    _sender: chrome.runtime.MessageSender,
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {

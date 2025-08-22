@@ -128,7 +128,10 @@ export class StorageManager {
   public static onSettingsChanged(callback: (changes: chrome.storage.StorageChange) => void): void {
     chrome.storage.onChanged.addListener((changes, namespace) => {
       if (namespace === 'sync' && changes[STORAGE_KEYS.SETTINGS]) {
-        callback(changes[STORAGE_KEYS.SETTINGS]);
+        const settingsChange = changes[STORAGE_KEYS.SETTINGS];
+        if (settingsChange) {
+          callback(settingsChange);
+        }
       }
     });
   }

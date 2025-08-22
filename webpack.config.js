@@ -36,7 +36,8 @@ module.exports = (env, argv) => {
           { from: 'src/popup/popup.css', to: 'popup/popup.css' },
           { from: 'src/options/options.html', to: 'options/options.html' },
           { from: 'src/options/options.css', to: 'options/options.css' },
-          { from: 'src/content-script/content-script.css', to: 'content-script/content-script.css' }
+          { from: 'src/content-script/content-script.css', to: 'content-script/content-script.css' },
+          { from: 'src/icons', to: 'icons' }
         ]
       })
     ],

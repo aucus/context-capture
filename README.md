@@ -17,7 +17,7 @@ A Chrome extension that captures screen regions, performs OCR text extraction, a
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/yourusername/context-capture.git
+git clone https://github.com/aucus/context-capture.git
 cd context-capture
 ```
 
@@ -222,7 +222,7 @@ This extension:
 
 ## Support
 
-For issues and feature requests, please use the [GitHub Issues](https://github.com/yourusername/context-capture/issues) page.
+For issues and feature requests, please use the [GitHub Issues](https://github.com/aucus/context-capture/issues) page.
 
 ## Changelog
 

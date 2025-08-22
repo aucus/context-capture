@@ -89,7 +89,7 @@ export class LLMService {
       throw new Error('No response from OpenAI');
     }
 
-    const summary = data.choices[0].message.content.trim();
+    const summary = data.choices[0]?.message?.content?.trim() || '';
 
     return {
       summary,
@@ -142,7 +142,7 @@ export class LLMService {
       throw new Error('No response from Anthropic');
     }
 
-    const summary = data.content[0].text.trim();
+    const summary = data.content[0]?.text?.trim() || '';
 
     return {
       summary,

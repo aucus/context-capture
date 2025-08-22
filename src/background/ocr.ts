@@ -1,5 +1,5 @@
 import { OCRResult, OCRSpaceResponse } from '../shared/types';
-import { API_ENDPOINTS, EXTENSION_CONSTANTS } from '../shared/constants';
+import { API_ENDPOINTS } from '../shared/constants';
 
 export class OCRService {
   private apiKey: string | null = null;
@@ -49,7 +49,9 @@ export class OCRService {
     
     const formData = new FormData();
     formData.append('apikey', this.apiKey);
-    formData.append('base64Image', base64Data);
+    if (base64Data) {
+      formData.append('base64Image', base64Data);
+    }
     formData.append('language', 'eng');
     formData.append('isOverlayRequired', 'false');
     formData.append('filetype', 'png');

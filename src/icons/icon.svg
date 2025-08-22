@@ -1,0 +1,16 @@
+<svg width="128" height="128" viewBox="0 0 128 128" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="64" cy="64" r="60" fill="#007AFF" stroke="#0056CC" stroke-width="4"/>
+  
+  <!-- Camera/selection frame -->
+  <rect x="32" y="32" width="64" height="64" rx="8" fill="none" stroke="white" stroke-width="6" stroke-dasharray="8 4"/>
+  
+  <!-- Crosshair in center -->
+  <circle cx="64" cy="64" r="4" fill="white"/>
+  <line x1="64" y1="56" x2="64" y2="72" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  <line x1="56" y1="64" x2="72" y2="64" stroke="white" stroke-width="3" stroke-linecap="round"/>
+  
+  <!-- AI/Text indicator -->
+  <rect x="40" y="40" width="48" height="12" rx="6" fill="rgba(255,255,255,0.2)"/>
+  <text x="64" y="50" text-anchor="middle" fill="white" font-family="Arial, sans-serif" font-size="8" font-weight="bold">AI</text>
+</svg>

@@ -1,4 +1,4 @@
-import { Region, CaptureResult } from '../shared/types';
+import { Region } from '../shared/types';
 import { MESSAGE_TYPES } from '../shared/constants';
 
 export class ScreenCapture {
@@ -19,8 +19,9 @@ export class ScreenCapture {
   public async captureRegion(region: Region): Promise<void> {
     try {
       // Get current tab ID
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab.id) {
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tab = tabs[0];
+      if (!tab?.id) {
         throw new Error('No active tab found');
       }
 
@@ -29,7 +30,7 @@ export class ScreenCapture {
         type: MESSAGE_TYPES.CAPTURE_REGION,
         data: {
           region,
-          tabId: tab.id
+          tabId: tab.id!
         }
       });
 
@@ -53,7 +54,7 @@ export class ScreenCapture {
   public async captureVisibleTab(region: Region): Promise<string> {
     try {
       // Capture the visible tab
-      const dataUrl = await chrome.tabs.captureVisibleTab(null, {
+      const dataUrl = await chrome.tabs.captureVisibleTab(null as any, {
         format: 'png',
         quality: 100
       });

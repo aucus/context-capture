@@ -24,7 +24,7 @@ class ContentScript {
     chrome.runtime.onMessage.addListener(this.handleMessage);
     
     // Listen for extension icon click
-    chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+    chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       if (message.type === 'START_CAPTURE') {
         this.startCapture();
         sendResponse({ success: true });
@@ -34,7 +34,7 @@ class ContentScript {
     console.log('ContextCapture content script initialized');
   }
 
-  private handleMessage(message: any, sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void): void {
+  private handleMessage(message: any, _sender: chrome.runtime.MessageSender, sendResponse: (response?: any) => void): void {
     switch (message.type) {
       case MESSAGE_TYPES.SHOW_RESULTS:
         this.showResults(message.data);

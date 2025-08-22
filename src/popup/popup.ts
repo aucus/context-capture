@@ -31,9 +31,11 @@ class Popup {
   private async checkServicesStatus(): Promise<void> {
     try {
       // Get current tab
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab.id) {
-        this.updateStatus('error', 'No active tab');
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tab = tabs[0];
+      if (!tab?.id) {
+        this.updateOCRStatus('error');
+        this.updateLLMStatus('error');
         return;
       }
 
@@ -96,14 +98,15 @@ class Popup {
   private async startCapture(): Promise<void> {
     try {
       // Get current tab
-      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-      if (!tab.id) {
+      const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+      const tab = tabs[0];
+      if (!tab?.id) {
         console.error('No active tab found');
         return;
       }
 
       // Send message to content script to start capture
-      await chrome.tabs.sendMessage(tab.id, { type: 'START_CAPTURE' });
+      await chrome.tabs.sendMessage(tab.id!, { type: 'START_CAPTURE' });
       
       // Close popup
       window.close();
