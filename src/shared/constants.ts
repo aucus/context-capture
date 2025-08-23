@@ -4,7 +4,7 @@ export const API_ENDPOINTS = {
   GOOGLE_VISION: 'https://vision.googleapis.com/v1/images:annotate',
   OPENAI: 'https://api.openai.com/v1/chat/completions',
   ANTHROPIC: 'https://api.anthropic.com/v1/messages',
-  GEMINI: 'https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent'
+  GEMINI: 'https://generativelanguage.googleapis.com/v1/models/gemini-1.5-flash:generateContent'
 } as const;
 
 // API Limits

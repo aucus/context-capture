@@ -203,6 +203,7 @@ export class LLMService {
       body: JSON.stringify({
         contents: [
           {
+            role: 'user',
             parts: [
               {
                 text: `Summarize the following text in exactly 3 lines, focusing on key points:\n\n${truncatedText}`
@@ -232,7 +233,7 @@ export class LLMService {
       throw new Error('No response from Gemini');
     }
 
-    const summary = data.candidates[0]?.content?.parts[0]?.text?.trim() || '';
+    const summary = data.candidates[0]?.content?.parts?.[0]?.text?.trim() || '';
 
     return {
       summary,

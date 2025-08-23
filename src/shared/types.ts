@@ -121,7 +121,9 @@ export interface GeminiResponse {
     };
   }>;
   error?: {
+    code: number;
     message: string;
+    status: string;
   };
 }
 
