@@ -20,33 +20,48 @@ class BackgroundService {
       const apiKeys = await StorageManager.getAllApiKeys();
 
       console.log('Initializing services with settings:', settings);
-      console.log('API keys available:', Object.keys(apiKeys).filter(key => apiKeys[key as keyof typeof apiKeys]));
+      console.log('API keys retrieved:', {
+        ocrApiKey: apiKeys.ocrApiKey ? `${apiKeys.ocrApiKey.substring(0, 8)}...` : 'not set',
+        googleVisionApiKey: apiKeys.googleVisionApiKey ? `${apiKeys.googleVisionApiKey.substring(0, 8)}...` : 'not set',
+        openaiApiKey: apiKeys.openaiApiKey ? `${apiKeys.openaiApiKey.substring(0, 8)}...` : 'not set',
+        anthropicApiKey: apiKeys.anthropicApiKey ? `${apiKeys.anthropicApiKey.substring(0, 8)}...` : 'not set',
+        geminiApiKey: apiKeys.geminiApiKey ? `${apiKeys.geminiApiKey.substring(0, 8)}...` : 'not set'
+      });
 
       // Configure OCR service
       this.ocrService.setService(settings.ocrService);
       if (settings.ocrService === 'ocrspace' && apiKeys.ocrApiKey) {
         this.ocrService.setApiKey(apiKeys.ocrApiKey);
-        console.log('OCR.Space API key configured');
+        console.log('OCR.Space API key configured successfully');
       } else if (settings.ocrService === 'googlevision' && apiKeys.googleVisionApiKey) {
         this.ocrService.setApiKey(apiKeys.googleVisionApiKey);
-        console.log('Google Vision API key configured');
+        console.log('Google Vision API key configured successfully');
       } else {
-        console.log('No API key configured for OCR service:', settings.ocrService);
+        console.warn(`No API key configured for OCR service: ${settings.ocrService}`);
+        console.warn('Available API keys:', {
+          ocrApiKey: !!apiKeys.ocrApiKey,
+          googleVisionApiKey: !!apiKeys.googleVisionApiKey
+        });
       }
 
       // Configure LLM service
       this.llmService.setService(settings.llmService);
       if (settings.llmService === 'openai' && apiKeys.openaiApiKey) {
         this.llmService.setOpenAIKey(apiKeys.openaiApiKey);
-        console.log('OpenAI API key configured');
+        console.log('OpenAI API key configured successfully');
       } else if (settings.llmService === 'anthropic' && apiKeys.anthropicApiKey) {
         this.llmService.setAnthropicKey(apiKeys.anthropicApiKey);
-        console.log('Anthropic API key configured');
+        console.log('Anthropic API key configured successfully');
       } else if (settings.llmService === 'gemini' && apiKeys.geminiApiKey) {
         this.llmService.setGeminiKey(apiKeys.geminiApiKey);
-        console.log('Gemini API key configured');
+        console.log('Gemini API key configured successfully');
       } else {
-        console.log('No API key configured for LLM service:', settings.llmService);
+        console.warn(`No API key configured for LLM service: ${settings.llmService}`);
+        console.warn('Available API keys:', {
+          openaiApiKey: !!apiKeys.openaiApiKey,
+          anthropicApiKey: !!apiKeys.anthropicApiKey,
+          geminiApiKey: !!apiKeys.geminiApiKey
+        });
       }
 
       console.log('Background service initialized');
@@ -101,6 +116,9 @@ class BackgroundService {
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
+      // Reinitialize services with latest settings before capture
+      await this.initializeServices();
+      
       const { region, tabId } = message.data;
 
       // Capture the visible tab
@@ -158,6 +176,9 @@ class BackgroundService {
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
+      // Reinitialize services with latest settings before OCR request
+      await this.initializeServices();
+      
       const result = await this.ocrService.extractText(message.data.imageData);
       sendResponse(result);
     } catch (error) {
@@ -172,6 +193,9 @@ class BackgroundService {
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
+      // Reinitialize services with latest settings before LLM request
+      await this.initializeServices();
+      
       const result = await this.llmService.generateSummary(message.data.text);
       sendResponse(result);
     } catch (error) {
@@ -214,6 +238,9 @@ class BackgroundService {
     sendResponse: (response?: any) => void
   ): Promise<void> {
     try {
+      // Reinitialize services with latest settings before API test
+      await this.initializeServices();
+      
       let success = false;
       
       if (data.service === 'ocr') {

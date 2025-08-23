@@ -10,7 +10,15 @@ export class StorageManager {
       const currentSettings = await this.getSettings();
       const updatedSettings = { ...currentSettings, ...settings };
       
-      console.log('StorageManager: Saving settings:', updatedSettings);
+      console.log('StorageManager: Saving settings with API keys:', {
+        ocrService: updatedSettings.ocrService,
+        llmService: updatedSettings.llmService,
+        hasOcrApiKey: !!updatedSettings.ocrApiKey,
+        hasGoogleVisionApiKey: !!updatedSettings.googleVisionApiKey,
+        hasOpenaiApiKey: !!updatedSettings.openaiApiKey,
+        hasAnthropicApiKey: !!updatedSettings.anthropicApiKey,
+        hasGeminiApiKey: !!updatedSettings.geminiApiKey
+      });
       
       // Save settings object
       await chrome.storage.sync.set({
@@ -40,6 +48,16 @@ export class StorageManager {
         await chrome.storage.sync.set(apiKeysToSave);
         console.log('StorageManager: Individual API keys saved:', Object.keys(apiKeysToSave));
       }
+      
+      // Verify storage was successful
+      const verification = await this.getAllApiKeys();
+      console.log('StorageManager: Verification - API keys after save:', {
+        ocrApiKey: verification.ocrApiKey ? `${verification.ocrApiKey.substring(0, 8)}...` : 'not found',
+        googleVisionApiKey: verification.googleVisionApiKey ? `${verification.googleVisionApiKey.substring(0, 8)}...` : 'not found',
+        openaiApiKey: verification.openaiApiKey ? `${verification.openaiApiKey.substring(0, 8)}...` : 'not found',
+        anthropicApiKey: verification.anthropicApiKey ? `${verification.anthropicApiKey.substring(0, 8)}...` : 'not found',
+        geminiApiKey: verification.geminiApiKey ? `${verification.geminiApiKey.substring(0, 8)}...` : 'not found'
+      });
       
       console.log('StorageManager: Settings saved successfully');
     } catch (error) {
