@@ -9,10 +9,12 @@ export class OCRService {
 
   public setApiKey(apiKey: string): void {
     this.apiKey = apiKey;
+    console.log(`OCRService: API key set for ${this.service} service`);
   }
 
   public setService(service: 'googlevision' | 'ocrspace' | 'tesseract'): void {
     this.service = service;
+    console.log(`OCRService: Service set to ${service}`);
   }
 
   /**
@@ -20,6 +22,9 @@ export class OCRService {
    */
   public async extractText(imageDataUrl: string): Promise<OCRResult> {
     try {
+      console.log(`OCRService: Starting text extraction with service: ${this.service}`);
+      console.log(`OCRService: API key configured: ${!!this.apiKey}`);
+      
       if (this.service === 'googlevision') {
         return await this.extractTextWithGoogleVision(imageDataUrl);
       } else if (this.service === 'ocrspace') {
@@ -46,6 +51,9 @@ export class OCRService {
       throw new Error('Google Vision API key not configured');
     }
 
+    console.log('Google Vision API: Starting API call');
+    console.log(`Google Vision API: API key length: ${this.apiKey.length}`);
+
     // Convert data URL to base64
     const base64Data = imageDataUrl.split(',')[1];
     if (!base64Data) {
@@ -53,6 +61,7 @@ export class OCRService {
     }
 
     const url = `${API_ENDPOINTS.GOOGLE_VISION}?key=${this.apiKey}`;
+    console.log(`Google Vision API: Making request to: ${url.substring(0, 50)}...`);
 
     const response = await fetch(url, {
       method: 'POST',

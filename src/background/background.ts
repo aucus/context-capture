@@ -30,6 +30,8 @@ class BackgroundService {
 
       // Configure OCR service
       this.ocrService.setService(settings.ocrService);
+      console.log(`OCR service set to: ${settings.ocrService}`);
+      
       if (settings.ocrService === 'ocrspace' && apiKeys.ocrApiKey) {
         this.ocrService.setApiKey(apiKeys.ocrApiKey);
         console.log('OCR.Space API key configured successfully');
@@ -42,6 +44,8 @@ class BackgroundService {
           ocrApiKey: !!apiKeys.ocrApiKey,
           googleVisionApiKey: !!apiKeys.googleVisionApiKey
         });
+        console.warn('Settings OCR service:', settings.ocrService);
+        console.warn('API keys object:', apiKeys);
       }
 
       // Configure LLM service
