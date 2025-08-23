@@ -11,9 +11,36 @@ export class StorageManager {
       const updatedSettings = { ...currentSettings, ...settings };
       
       console.log('StorageManager: Saving settings:', updatedSettings);
+      
+      // Save settings object
       await chrome.storage.sync.set({
         [STORAGE_KEYS.SETTINGS]: updatedSettings
       });
+      
+      // Also save individual API keys for backward compatibility
+      const apiKeysToSave: { [key: string]: string } = {};
+      
+      if (updatedSettings.googleVisionApiKey) {
+        apiKeysToSave[STORAGE_KEYS.GOOGLE_VISION_API_KEY] = updatedSettings.googleVisionApiKey;
+      }
+      if (updatedSettings.ocrApiKey) {
+        apiKeysToSave[STORAGE_KEYS.OCR_API_KEY] = updatedSettings.ocrApiKey;
+      }
+      if (updatedSettings.openaiApiKey) {
+        apiKeysToSave[STORAGE_KEYS.OPENAI_API_KEY] = updatedSettings.openaiApiKey;
+      }
+      if (updatedSettings.anthropicApiKey) {
+        apiKeysToSave[STORAGE_KEYS.ANTHROPIC_API_KEY] = updatedSettings.anthropicApiKey;
+      }
+      if (updatedSettings.geminiApiKey) {
+        apiKeysToSave[STORAGE_KEYS.GEMINI_API_KEY] = updatedSettings.geminiApiKey;
+      }
+      
+      if (Object.keys(apiKeysToSave).length > 0) {
+        await chrome.storage.sync.set(apiKeysToSave);
+        console.log('StorageManager: Individual API keys saved:', Object.keys(apiKeysToSave));
+      }
+      
       console.log('StorageManager: Settings saved successfully');
     } catch (error) {
       console.error('Failed to save settings:', error);
@@ -114,6 +141,7 @@ export class StorageManager {
     geminiApiKey?: string;
   }> {
     try {
+      // First try to get from individual API key storage
       const result = await chrome.storage.sync.get([
         STORAGE_KEYS.OCR_API_KEY,
         STORAGE_KEYS.GOOGLE_VISION_API_KEY,
@@ -122,12 +150,15 @@ export class StorageManager {
         STORAGE_KEYS.GEMINI_API_KEY
       ]);
       
+      // Also get from settings object
+      const settings = await this.getSettings();
+      
       return {
-        ocrApiKey: result[STORAGE_KEYS.OCR_API_KEY] || undefined,
-        googleVisionApiKey: result[STORAGE_KEYS.GOOGLE_VISION_API_KEY] || undefined,
-        openaiApiKey: result[STORAGE_KEYS.OPENAI_API_KEY] || undefined,
-        anthropicApiKey: result[STORAGE_KEYS.ANTHROPIC_API_KEY] || undefined,
-        geminiApiKey: result[STORAGE_KEYS.GEMINI_API_KEY] || undefined
+        ocrApiKey: result[STORAGE_KEYS.OCR_API_KEY] || settings.ocrApiKey || undefined,
+        googleVisionApiKey: result[STORAGE_KEYS.GOOGLE_VISION_API_KEY] || settings.googleVisionApiKey || undefined,
+        openaiApiKey: result[STORAGE_KEYS.OPENAI_API_KEY] || settings.openaiApiKey || undefined,
+        anthropicApiKey: result[STORAGE_KEYS.ANTHROPIC_API_KEY] || settings.anthropicApiKey || undefined,
+        geminiApiKey: result[STORAGE_KEYS.GEMINI_API_KEY] || settings.geminiApiKey || undefined
       };
     } catch (error) {
       console.error('Failed to get API keys:', error);

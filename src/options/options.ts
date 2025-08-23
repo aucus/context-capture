@@ -154,6 +154,16 @@ class OptionsPage {
         settings.geminiApiKey = formData.get('geminiApiKey') as string;
       }
 
+      console.log('Options: Saving settings with API keys:', {
+        ocrService: settings.ocrService,
+        llmService: settings.llmService,
+        hasGoogleVisionKey: !!settings.googleVisionApiKey,
+        hasOcrSpaceKey: !!settings.ocrApiKey,
+        hasOpenAIKey: !!settings.openaiApiKey,
+        hasAnthropicKey: !!settings.anthropicApiKey,
+        hasGeminiKey: !!settings.geminiApiKey
+      });
+
       const response = await chrome.runtime.sendMessage({
         type: MESSAGE_TYPES.SAVE_SETTINGS,
         data: settings
